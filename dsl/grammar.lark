@@ -1,0 +1,64 @@
+////////////////////////////////////////
+// DSL Grammar for Trading Strategies //
+////////////////////////////////////////
+
+?start: section+
+
+// ----------------------------
+// Sections
+// ----------------------------
+section: "ENTRY:" expr            -> entry_section
+       | "EXIT:" expr             -> exit_section
+
+// ----------------------------
+// Boolean Logic (AND / OR)
+// ----------------------------
+?expr: or_expr
+?or_expr: and_expr
+        | or_expr "OR" and_expr   -> or_op
+
+?and_expr: term
+         | and_expr "AND" term    -> and_op
+
+// ----------------------------
+// Terms (atomic expressions)
+// ----------------------------
+?term: comparison
+     | cross
+     | "(" expr ")"
+
+// ----------------------------
+// Comparisons
+// ----------------------------
+comparison: operand COMP operand  -> comparison
+
+// ----------------------------
+// Cross Events
+// ----------------------------
+cross: operand "crosses" "above" operand  -> cross_above
+     | operand "crosses" "below" operand  -> cross_below
+
+// ----------------------------
+// Operands
+// ----------------------------
+operand: INDICATOR                -> indicator
+       | IDENT                    -> ident
+       | NUMBER                   -> number
+       | "yesterday_high"         -> yest_high
+
+// ----------------------------
+// Tokens
+// ----------------------------
+INDICATOR: /(SMA|sma|RSI|rsi)\([a-zA-Z0-9_,\s]+\)/
+IDENT: /(open|high|low|close|volume)/i
+NUMBER: /\d+(\.\d+)?/
+
+COMP: ">" | "<" | ">=" | "<=" | "=="
+
+// ----------------------------
+// Whitespace, newlines, comments
+// ----------------------------
+%ignore /[ \t\f\r]+/
+%ignore /\n+/
+%ignore /\#.*/
+
