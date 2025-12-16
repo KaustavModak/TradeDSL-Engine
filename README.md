@@ -9,7 +9,7 @@ This project is built exactly according to the specifications of the assignment 
 
 ---
 
-# 🚀 Features
+#  Features
 
 ### ✔ Convert English trading rules into structured JSON  
 Input example:
